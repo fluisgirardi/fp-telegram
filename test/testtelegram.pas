@@ -104,6 +104,7 @@ type
   TTestMessageQuote=class(TTestCase)
   published
     procedure ParseMessageQuote;
+    procedure ParseMessageExternalReply;
   end;
 
   { TTestPayments }
@@ -415,6 +416,49 @@ begin
       AssertEquals('bold', aMessage.Quote.Entities[0].TypeEntity);
       AssertEquals(0, aMessage.Quote.Entities[0].Offset);
       AssertEquals(6, aMessage.Quote.Entities[0].Length);
+    finally
+      aUpdateObj.Free;
+    end;
+  finally
+    aJSONData.Free;
+  end;
+end;
+
+procedure TTestMessageQuote.ParseMessageExternalReply;
+const
+  MessageWithExternalReplyJSON =
+    '{' +
+      '"update_id":1003,' +
+      '"message":{' +
+        '"message_id":56,' +
+        '"date":1700000300,' +
+        '"chat":{"id":77,"type":"private","first_name":"Test"},' +
+        '"from":{"id":88,"is_bot":false,"first_name":"Alice"},' +
+        '"text":"Reply to external message",' +
+        '"external_reply":{' +
+          '"origin":{' +
+            '"type":"user",' +
+            '"date":1700000290,' +
+            '"sender_user":{"id":99,"is_bot":false,"first_name":"Bob"}' +
+          '}' +
+        '}' +
+      '}' +
+    '}';
+var
+  aUpdateObj: TTelegramUpdateObj;
+  aMessage: TTelegramMessageObj;
+  aJSONData: TJSONData;
+begin
+  aJSONData:=GetJSON(MessageWithExternalReplyJSON);
+  try
+    aUpdateObj:=TTelegramUpdateObj.Create(aJSONData as TJSONObject);
+    try
+      AssertEquals(Ord(utMessage), Ord(aUpdateObj.UpdateType));
+      aMessage:=aUpdateObj.Message;
+      AssertNotNull('Message should be assigned', aMessage);
+      AssertNotNull('ExternalReply should be assigned', aMessage.ExternalReply);
+      AssertTrue('ExternalReply JSON should contain origin type',
+        Pos('"type":"user"', aMessage.ExternalReply.AsString)>0);
     finally
       aUpdateObj.Free;
     end;
