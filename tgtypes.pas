@@ -11,6 +11,7 @@ type
   TTelegramUpdateObj = class;
   TTelegramMessageObj = class;
   TTelegramTextQuote = class;
+  TTelegramExternalReplyInfo = class;
   TTelegramMessageEntityObj = class;
   TTelegramChatMemberUpdated = class;
   TTelegramInlineQueryObj = class;
@@ -114,6 +115,7 @@ type
     FContact: TTelegramContact;
     FDate: Int64;
     FDocument: TTelegramDocument;
+    FExternalReply: TTelegramExternalReplyInfo;
     FForwardFrom: TTelegramUserObj;
     FForwardFromChat: TTelegramChatObj;
     FForwardFromMessageID: LongInt;
@@ -152,6 +154,7 @@ type
     property Text: string read fText;
     property Entities: TTelegramUpdateObjList read fEntities;
     property Document: TTelegramDocument read FDocument;
+    property ExternalReply: TTelegramExternalReplyInfo read FExternalReply;
     property Location: TTelegramLocation read FLocation;
     property Photo: TTelegramPhotoSizeList read FPhoto;
     property Audio: TTelegramAudio read FAudio;
@@ -163,6 +166,13 @@ type
     property MediaGroupID: String read FMediaGroupID;
     property MessageThreadID: Integer read FMessageThreadID;
     property IsTopicMessage: Boolean read FIsTopicMessage;
+  end;
+
+  { TTelegramExternalReplyInfo }
+
+  TTelegramExternalReplyInfo = class(TTelegramObj)
+  public
+    constructor Create(JSONObject: TJSONObject); override;
   end;
 
   { TTelegramTextQuote }
@@ -1478,6 +1488,8 @@ begin
   fChatId := fJSON.Objects['chat'].Int64s['id']; // deprecated?
   FFrom:=TTelegramUserObj.CreateFromJSONObject(fJSON.Find('from', jtObject) as TJSONObject) as TTelegramUserObj;
   FDocument := TTelegramDocument.CreateFromJSONObject(fJSON.Find('document', jtObject) as TJSONObject) as TTelegramDocument;
+  FExternalReply := TTelegramExternalReplyInfo.CreateFromJSONObject(
+    fJSON.Find('external_reply', jtObject) as TJSONObject) as TTelegramExternalReplyInfo;
   FVideo := TTelegramVideo.CreateFromJSONObject(fJSON.Find('video', jtObject) as TJSONObject) as TTelegramVideo;
   FAudio := TTelegramAudio.CreateFromJSONObject(fJSON.Find('audio', jtObject) as TJSONObject) as TTelegramAudio;
   FVoice := TTelegramVoice.CreateFromJSONObject(fJSON.Find('voice', jtObject) as TJSONObject) as TTelegramVoice; 
@@ -1532,11 +1544,19 @@ begin
   FQuote.Free;
   FPhoto.Free;
   FDocument.Free;
+  FExternalReply.Free;
   FAudio.Free;
   FVideo.Free;
   FVoice.Free;
   fEntities.Free;
   inherited Destroy;
+end;
+
+{ TTelegramExternalReplyInfo }
+
+constructor TTelegramExternalReplyInfo.Create(JSONObject: TJSONObject);
+begin
+  inherited Create(JSONObject);
 end;
 
 { TTelegramTextQuote }
