@@ -108,13 +108,16 @@ type
   private
     function GetRequestContact: Boolean;
     function GetRequestLocation: Boolean;
+    function GetStyle: String;
     function Gettext: String;
     procedure SetRequestContact(AValue: Boolean);
     procedure SetRequestLocation(AValue: Boolean);
+    procedure SetStyle(const AValue: String);
     procedure Settext(AValue: String);
   public
     constructor Create(const AText: String);
     property text: String read Gettext write Settext;
+    property Style: String read GetStyle write SetStyle; // Optional
     property RequestContact: Boolean read GetRequestContact write SetRequestContact; // Optional
     property RequestLocation: Boolean read GetRequestLocation write SetRequestLocation; // Optional
   end;
@@ -142,9 +145,11 @@ type
     function Getcallback_data: String;
     function Getswitch_inline_query: String;
     function Getswitch_inline_query_current_chat: String;
+    function GetStyle: String;
     function Gettext: String;
     function Geturl: String;
     procedure Setcallback_data(AValue: String);
+    procedure SetStyle(AValue: String);
     procedure Setswitch_inline_query(AValue: String);
     procedure Setswitch_inline_query_current_chat(AValue: String);
     procedure Settext(AValue: String);
@@ -152,6 +157,7 @@ type
   public
     constructor Create(const AText: String);
     property text: String read Gettext write Settext;
+    property Style: String read GetStyle write SetStyle;
     property url: String read Geturl write Seturl;
     property callback_data: String read Getcallback_data write Setcallback_data;
     property switch_inline_query: String read Getswitch_inline_query write Setswitch_inline_query;
@@ -856,6 +862,7 @@ const
   s_OneTimeKeyboard = 'one_time_keyboard';
   s_RequestContact = 'request_contact';
   s_RequestLocation = 'request_location';
+  s_Style = 'style';
   s_SwitchInlineQuery = 'switch_inline_query';
   s_CallbackData = 'callback_data';
   s_SwitchInlineQueryCurrentChat = 's_switch_inline_query_current_chat';
@@ -1697,6 +1704,11 @@ begin
   Result:=Strings[s_text];
 end;
 
+function TKeyboardButton.GetStyle: String;
+begin
+  Result:=Strings[s_Style];
+end;
+
 procedure TKeyboardButton.SetRequestContact(AValue: Boolean);
 begin
   Booleans[s_RequestContact]:=AValue;
@@ -1710,6 +1722,11 @@ end;
 procedure TKeyboardButton.Settext(AValue: String);
 begin
   Strings[s_text]:=AValue;
+end;
+
+procedure TKeyboardButton.SetStyle(const AValue: String);
+begin
+  Strings[s_Style]:=AValue;
 end;
 
 constructor TKeyboardButton.Create(const AText: String);
@@ -1910,6 +1927,11 @@ begin
   Strings[s_text]:=AValue;
 end;
 
+procedure TInlineKeyboardButton.SetStyle(AValue: String);
+begin
+  Strings[s_Style]:=AValue;
+end;
+
 procedure TInlineKeyboardButton.Setcallback_data(AValue: String);
 begin
   CheckOptnlAndSet(s_callbackdata, AValue);
@@ -1918,6 +1940,11 @@ end;
 function TInlineKeyboardButton.Geturl: String;
 begin
   Result:=Strings[s_url];
+end;
+
+function TInlineKeyboardButton.GetStyle: String;
+begin
+  Result:=Strings[s_Style];
 end;
 
 function TInlineKeyboardButton.CheckOptnlNull: Boolean;
