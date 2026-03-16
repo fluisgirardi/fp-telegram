@@ -458,7 +458,7 @@ begin
       AssertNotNull('Message should be assigned', aMessage);
       AssertNotNull('ExternalReply should be assigned', aMessage.ExternalReply);
       AssertTrue('ExternalReply JSON should contain origin type',
-        Pos('"type":"user"', aMessage.ExternalReply.AsString)>0);
+        Pos('"type" : "user"', aMessage.ExternalReply.AsString)>0);
     finally
       aUpdateObj.Free;
     end;
