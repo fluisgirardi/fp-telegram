@@ -85,6 +85,13 @@ type
     procedure ParseMessageReactionCountUpdate;
   end;
 
+  { TTestSenderTypes }
+
+  TTestSenderTypes=class(TTestCase)
+  published
+    procedure KeyboardButtonsStyle;
+  end;
+
   { TTestReceiveLongPollingBase }
   { Test receiving updates via longpolling from the test bot. Please send test messages to the bot
     immediately before running the test! }
@@ -467,6 +474,38 @@ begin
   end;
 end;
 
+{ TTestSenderTypes }
+
+procedure TTestSenderTypes.KeyboardButtonsStyle;
+var
+  aReplyMarkup: TReplyMarkup;
+  aReplyButtons: TKeyboardButtons;
+  aInlineButtons: TInlineKeyboardButtons;
+  aReplyButton: TKeyboardButton;
+  aInlineButton: TInlineKeyboardButton;
+begin
+  aReplyMarkup:=TReplyMarkup.Create;
+  try
+    aReplyButtons:=aReplyMarkup.CreateReplyKeyboard.Add;
+    aReplyButton:=TKeyboardButton.Create('Reply button');
+    aReplyButton.Style:='primary';
+    aReplyButtons.Add(aReplyButton);
+
+    aInlineButtons:=aReplyMarkup.CreateInlineKeyBoard.Add;
+    aInlineButton:=TInlineKeyboardButton.Create('Inline button');
+    aInlineButton.Callback_Data:='cb';
+    aInlineButton.Style:='secondary';
+    aInlineButtons.Add(aInlineButton);
+
+    AssertEquals('primary', aReplyButton.Style);
+    AssertEquals('secondary', aInlineButton.Style);
+    AssertTrue('Reply keyboard JSON should contain style', Pos('"style" : "primary"', aReplyMarkup.AsJSON)>0);
+    AssertTrue('Inline keyboard JSON should contain style', Pos('"style" : "secondary"', aReplyMarkup.AsJSON)>0);
+  finally
+    aReplyMarkup.Free;
+  end;
+end;
+
 { TTestSender }
 
 procedure TTestSender.SetUp;
@@ -794,6 +833,6 @@ end;
 
 initialization
   RegisterTests([TTestSender, TTestSenderProcedure, TTestProxySender, TTestReceiveLongPolling,
-    TTestPayments, TTestReactionUpdates, TTestMessageQuote]);
+    TTestPayments, TTestReactionUpdates, TTestMessageQuote, TTestSenderTypes]);
 
 end.
